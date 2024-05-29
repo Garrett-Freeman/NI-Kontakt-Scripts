@@ -1,0 +1,55 @@
+on init
+    declare %targetBytes[18]           
+    %targetBytes[0] := 1
+    %targetBytes[1] := 2
+    %targetBytes[2] := 11
+    %targetBytes[3] := 21
+    %targetBytes[4] := 58
+    %targetBytes[5] := 59
+    %targetBytes[6] := 60
+    %targetBytes[7] := 61
+    %targetBytes[8] := 62
+    %targetBytes[9] := 63
+    %targetBytes[10] := 77
+    %targetBytes[11] := 78
+    %targetBytes[12] := 79
+    %targetBytes[13] := 80
+    %targetBytes[14] := 89
+    %targetBytes[15] := 90
+    %targetBytes[16] := 91
+    %targetBytes[17] := 92
+    
+    declare $counter
+    $counter := num_elements(%targetBytes)
+
+	declare $maxMidiIndex
+	$maxMidiIndex := 63
+
+    declare $index
+	$index := 0
+
+	declare $midiIndex
+	$midiIndex := 0
+
+	declare $indexHolder 
+	$indexHolder := 0
+end on
+
+on midi_in
+    while ($index < $counter)
+        if ($MIDI_COMMAND = $MIDI_COMMAND_CC and $MIDI_BYTE_1 = %targetBytes[$index]) 
+			while ($midiIndex < $maxMidiIndex)
+				set_midi ($midiIndex + 1, $MIDI_COMMAND_CC, $MIDI_BYTE_1, $MIDI_BYTE_2)
+				$indexHolder := $midiIndex
+        		$midiIndex := $indexHolder + 1
+			end while            
+        end if
+
+		$indexHolder := $index
+        $index := $indexHolder + 1
+    end while
+
+	$midiIndex := 0
+	$index := 0
+end on
+
